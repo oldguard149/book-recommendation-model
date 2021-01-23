@@ -34,7 +34,7 @@ def predict():
     )
 
 
-def get_recommendations_with_isbn_index(isbn, number, index=isbnIndex, cosine_sim=cosine_similarity_score):
+def get_recommendations_with_isbn_index(isbn, numberOfBooksReturn, index=isbnIndex, cosine_sim=cosine_similarity_score):
     # Get similarity score
     idx = index[isbn]
     sim_scores = list(enumerate(cosine_sim[idx]))
@@ -43,7 +43,7 @@ def get_recommendations_with_isbn_index(isbn, number, index=isbnIndex, cosine_si
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
     # Get top scores
-    sim_scores = sim_scores[1:(number+1)]
+    sim_scores = sim_scores[1:(numberOfBooksReturn+1)]
 
     # Get the book indices
     book_indices = [i[0] for i in sim_scores]
