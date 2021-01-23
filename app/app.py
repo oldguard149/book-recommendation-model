@@ -16,6 +16,7 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def predict():
     isbn = request.json['isbn']
+    noOfBook = request.json['number']
     try:
         # check is post request isbn is valid
         _ = isbnIndex[isbn]
@@ -25,8 +26,7 @@ def predict():
             status=400,
             mimetype='application/json'
         )
-
-    isbnList = get_recommendations_with_isbn_index(isbn, isbnIndex).tolist()
+    isbnList = get_recommendations_with_isbn_index(isbn, noOfBook, isbnIndex).tolist()
     return app.response_class(
         response= json.dumps({'success': True, 'isbnlist': isbnList}),
         status=200,
@@ -34,7 +34,7 @@ def predict():
     )
 
 
-def get_recommendations_with_isbn_index(isbn, index=isbnIndex, cosine_sim=cosine_similarity_score):
+def get_recommendations_with_isbn_index(isbn, number, index=isbnIndex, cosine_sim=cosine_similarity_score):
     # Get similarity score
     idx = index[isbn]
     sim_scores = list(enumerate(cosine_sim[idx]))
@@ -42,8 +42,8 @@ def get_recommendations_with_isbn_index(isbn, index=isbnIndex, cosine_sim=cosine
     # Sort similarity scores in descending order
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-    # Get top 10 scores
-    sim_scores = sim_scores[1:11]
+    # Get top scores
+    sim_scores = sim_scores[1:(number+1)]
 
     # Get the book indices
     book_indices = [i[0] for i in sim_scores]
